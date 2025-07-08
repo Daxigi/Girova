@@ -1,0 +1,124 @@
+// This is your Prisma schema file,
+// learn more about it in the docs: https://pris.ly/d/prisma-schema
+
+// Looking for ways to speed up your queries, or scale easily with your serverless or edge functions?
+// Try Prisma Accelerate: https://pris.ly/cli/accelerate-init
+
+generator client {
+  provider = "prisma-client-js"
+  output   = "../src/generated/prisma"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+
+// --- ENUMS ---
+// Los Enums nos permiten definir un conjunto de valores permitidos para un campo.
+// Esto evita errores y mantiene los datos consistentes.
+
+enum Role {
+  ADMIN
+  // En el futuro podrías añadir otros roles como EDITOR, etc.
+}
+
+enum OrderStatus {
+  PENDING     // Pendiente de pago
+  COMPLETED   // Pagada y completada
+  SHIPPED     // Enviada
+  CANCELLED   // Cancelada
+}
+
+
+// --- MODELOS DE DATOS (TABLAS) ---
+
+// Modelo para los administradores del sitio.
+model User {
+  id        String   @id @default(cuid())
+  email     String   @unique
+  name      String?
+  password  String   // Guardaremos la contraseña hasheada, no el texto plano.
+  role      Role     @default(ADMIN)
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+}
+
+// Modelo para los clientes que compran en la tienda.
+model Customer {
+  id        String   @id @default(cuid())
+  email     String   @unique
+  name      String
+  address   String?
+  phone     String?
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  // Relación: Un cliente puede tener muchas órdenes.
+  orders    Order[]
+}
+
+// Modelo para los productos de la tienda.
+model Product {
+  id            String    @id @default(cuid())
+  name          String
+  description   String?
+  price         Float     // Precio de venta al público
+  purchasePrice Float?    // Precio de compra (costo), como pediste.
+  stock         Int       @default(0) // Cantidad en inventario
+  imageUrl      String?
+  createdAt     DateTime  @default(now())
+  updatedAt     DateTime  @updatedAt
+
+  // Relación: Un producto puede estar en muchas líneas de órdenes.
+  orderItems    OrderItem[]
+}
+
+// Modelo para las órdenes o ventas.
+model Order {
+  id         String      @id @default(cuid())
+  status     OrderStatus @default(PENDING)
+  total      Float       // El monto total de la venta
+  createdAt  DateTime    @default(now())
+  updatedAt  DateTime    @updatedAt
+
+  // Relación: Cada orden pertenece a un cliente.
+  customerId String
+  customer   Customer @relation(fields: [customerId], references: [id])
+
+  // Relación: Cada orden tiene una lista de productos (items).
+  items      OrderItem[]
+
+  // Relación: Una orden puede (o no) tener un cupón aplicado.
+  couponId   String?  @unique // unique para asegurar que un cupón se use una sola vez
+  coupon     Coupon?  @relation(fields: [couponId], references: [id])
+}
+
+// Esta es la tabla intermedia (o "pivote") entre Órdenes y Productos.
+// Guarda los detalles de cada producto dentro de una orden específica.
+model OrderItem {
+  id        String @id @default(cuid())
+  quantity  Int
+  price     Float  // Guardamos el precio al momento de la compra, por si el precio del producto cambia en el futuro.
+
+  // Relación: Pertenece a una orden.
+  orderId   String
+  order     Order  @relation(fields: [orderId], references: [id])
+
+  // Relación: Se refiere a un producto.
+  productId String
+  product   Product @relation(fields: [productId], references: [id])
+}
+
+// Modelo para los cupones de descuento.
+model Coupon {
+  id                 String    @id @default(cuid())
+  code               String    @unique // El código que el cliente ingresa (ej. "VERANO20")
+  discountPercentage Float     // Porcentaje de descuento (ej. 0.20 para un 20%)
+  expiresAt          DateTime?
+  isActive           Boolean   @default(true)
+
+  // Relación: El cupón que ha sido usado en una orden.
+  Order              Order?
+}
