@@ -7,7 +7,7 @@ export function HeroSection() {
       <div className="absolute inset-0 bg-gradient-to-r from-black/60 to-black/30" />
       <div
         className="relative h-[70vh] flex items-center justify-start bg-cover bg-center"
-        style={{ backgroundImage: "url('/images/girova.jpeg')" }}
+        style={{ backgroundImage: "url('/images/girova.png')" }}
       >
         <div className="container px-4 mx-auto">
           <div className="max-w-lg space-y-6 text-white">
