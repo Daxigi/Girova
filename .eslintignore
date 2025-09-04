@@ -1,0 +1,12 @@
+# Archivos y carpetas que ESLint debe ignorar
+
+# Dependencias y archivos de compilación
+node_modules
+.next
+.turbo
+dist
+build
+src/generated/
+
+# Archivos auto-generados por Prisma
+src/generated/

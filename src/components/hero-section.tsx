@@ -7,11 +7,11 @@ export function HeroSection() {
       <div className="absolute inset-0 bg-gradient-to-r from-black/60 to-black/30" />
       <div
         className="relative h-[70vh] flex items-center justify-start bg-cover bg-center"
-        style={{ backgroundImage: "url('/images/girova.png')" }}
+        style={{ backgroundImage: "url('/placeholder.svg?height=1080&width=1920')" }}
       >
         <div className="container px-4 mx-auto">
           <div className="max-w-lg space-y-6 text-white">
-            <h1 className="text-4xl font-bold tracking-tight sm:text-5xl md:text-6xl">GIROVA</h1>
+            <h1 className="text-4xl font-bold tracking-tight sm:text-5xl md:text-6xl">New Season Collection</h1>
             <p className="text-lg md:text-xl">
               Discover our latest styles crafted with premium materials for exceptional comfort and timeless elegance.
             </p>

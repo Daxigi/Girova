@@ -1,3 +1,4 @@
+console.log("verificando env var:", process.env.NEXTAUTH_URL)
 import NextAuth from "next-auth"
 import  CredentialsProvider  from "next-auth/providers/credentials"
 import prisma from '@/app/lib/prisma'
